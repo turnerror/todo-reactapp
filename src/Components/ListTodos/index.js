@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import {Todo} from '../Todo';
 
-export class ListUncompleted extends Component {
+export class ListTodos extends Component {
 
 
     constructor(props) {
         super(props);
-        this.state = {todos: []}
+        this.state = {todos: []};
+        this.state = {todoStatus: ""};
     }
 
     componentWillReceiveProps(props) {
-        this.setState({ todos: props.todos });
         console.log(props.todos);
+        this.setState({ 'todos': props.todos, 'todoStatus': props.todoStatus});
     }
 
     render() {
@@ -24,9 +25,11 @@ export class ListUncompleted extends Component {
 
     displayTodos(todos) {
         let result = [];
-        result = todos.map(todo =>
-            <Todo todo={todo} />
-        );
+        if (typeof todos != 'undefined' && todos.length > 0) {
+            result = todos.map(todo =>
+                <Todo todo={todo} todoStatus={this.state.todoStatus}/>
+            );
+        }
 
         return result
     }

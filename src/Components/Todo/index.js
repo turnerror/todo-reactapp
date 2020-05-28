@@ -7,7 +7,7 @@ export class Todo extends Component {
         return (
             <li>
                 <label>{this.props.todo.task}</label>
-                <input type="checkbox" value={this.props.todo._id} name="uncompleted"/>
+                <input type="checkbox" value={this.props.todo._id} name={this.props.todoStatus}/>
             </li>
         )
     }
