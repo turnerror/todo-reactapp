@@ -11,7 +11,6 @@ export class ListTodos extends Component {
     }
 
     componentWillReceiveProps(props) {
-        console.log(props.todos);
         this.setState({ 'todos': props.todos, 'todoStatus': props.todoStatus});
     }
 
@@ -27,7 +26,7 @@ export class ListTodos extends Component {
         let result = [];
         if (typeof todos != 'undefined' && todos.length > 0) {
             result = todos.map(todo =>
-                <Todo todo={todo} todoStatus={this.state.todoStatus}/>
+                <Todo runOnClick={this.props.runOnClick} btnValue={this.props.btnValue} todo={todo}/>
             );
         }
 

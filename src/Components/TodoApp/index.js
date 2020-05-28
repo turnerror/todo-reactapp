@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {ListTodos} from "../ListTodos";
+import {AddTodo} from "../AddTodo";
 
 export class TodoApp extends Component {
     constructor(props) {
@@ -23,8 +24,75 @@ export class TodoApp extends Component {
         this.setState({'completedTodos': data.data});
     };
 
+    createTodo = async (e) => {
+        e.preventDefault();
+
+        const value = e.target.todoName.value;
+        const result = await fetch('http://localhost:3001/todos', {
+            method: 'POST',
+            body: JSON.stringify({task: value}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await result.json();
+        if (data.success){
+            let uncompleted = this.state.uncompletedTodos;
+            console.log(data.data);
+            uncompleted.push(data.data);
+            this.setState({'uncompletedTasks': uncompleted})
+        }
+    };
+
+    completeTodo = async (id) => {
+        const result = await fetch(`http://localhost:3001/todo/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await result.json();
+        if (data.success){
+            let uncompleted = this.state.uncompletedTodos;
+            let completed = this.state.completedTodos;
+            let i = 0;
+
+            uncompleted.forEach(todo => {
+                if(todo._id === id) {
+                    uncompleted.splice(i, 1);
+                    completed.push(todo);
+                    return;
+                }
+                i++;
+            });
+            this.setState({'completedTasks': completed});
+            this.setState({'uncompletedTasks': uncompleted});
+        }
+    };
+
+    deleteTodo = async (id) => {
+        const result = await fetch(`http://localhost:3001/todo/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await result.json();
+        if (data.success){
+            let completed = this.state.completedTodos;
+            let i = 0;
+            completed.forEach(todo => {
+                if(todo._id === id) {
+                    completed.splice(i, 1);
+                    return;
+                }
+                i++;
+            });
+            this.setState({'completedTasks': completed});
+        }
+    };
+
     render() {
-        console.log(this.state.uncompletedTodos);
 
         return (
             <section className="todoapp">
@@ -33,10 +101,11 @@ export class TodoApp extends Component {
                 </header>
                 <section className="main">
                     <h3>Added a Todo!</h3>
+                        <AddTodo createTodo={this.createTodo}/>
                     <h3>Uncompleted Todos</h3>
-                        <ListTodos todos={this.state.uncompletedTodos} todoStatus="uncompleted"/>
+                        <ListTodos runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
                     <h3>Completed Todos</h3>
-                        <ListTodos todos={this.state.completedTodos} todoStatus="completed"/>
+                        <ListTodos runOnClick={this.deleteTodo} todos={this.state.completedTodos} btnValue="Delete"/>
                 </section>
             </section>
         )
