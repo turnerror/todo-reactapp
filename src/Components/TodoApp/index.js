@@ -28,6 +28,10 @@ export class TodoApp extends Component {
         e.preventDefault();
 
         const value = e.target.todoName.value;
+        if (value.length < 1) {
+            this.setState({error: 'Task must be at least 1 character long'});
+            return;
+        }
         const result = await fetch('http://localhost:3001/todos', {
             method: 'POST',
             body: JSON.stringify({task: value}),
@@ -39,7 +43,8 @@ export class TodoApp extends Component {
         if (data.success){
             let uncompleted = this.state.uncompletedTodos;
             uncompleted.push(data.data);
-            this.setState({'uncompletedTasks': uncompleted})
+            this.setState({'uncompletedTasks': uncompleted});
+            this.setState({error: ''});
         }
     };
 
@@ -101,6 +106,7 @@ export class TodoApp extends Component {
                 <section className="main">
                     <h3>Added a Todo!</h3>
                         <AddTodo createTodo={this.createTodo}/>
+                    {this.state.error}
                     <h3>Uncompleted Todos</h3>
                         <ListTodos runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
                     <h3>Completed Todos</h3>
