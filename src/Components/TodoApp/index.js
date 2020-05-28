@@ -38,7 +38,6 @@ export class TodoApp extends Component {
         const data = await result.json();
         if (data.success){
             let uncompleted = this.state.uncompletedTodos;
-            console.log(data.data);
             uncompleted.push(data.data);
             this.setState({'uncompletedTasks': uncompleted})
         }
