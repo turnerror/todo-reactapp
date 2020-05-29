@@ -2,17 +2,8 @@ import React, { Component } from 'react';
 
 export class Todo extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {id: ''};
-    }
-
-    componentWillReceiveProps(props) {
-        this.setState({ 'id': this.props.todo._id});
-    }
-
     handleChecked= (e) => {
-        this.props.runOnClick(this.state.id);
+        this.props.runOnClick(this.props.todo._id);
     }
 
 
