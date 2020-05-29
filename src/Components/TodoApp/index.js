@@ -67,7 +67,7 @@ export class TodoApp extends Component {
                     return;
                 }
             });
-            
+
             this.setState({'completedTasks': completed});
             this.setState({'uncompletedTasks': uncompleted});
         }
