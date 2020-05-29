@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import{TodoButton} from "../TodoButton";
+import{TodoCompleteButton} from "../TodoCompleteButton";
 import{TodoLabel} from "../TodoLabel";
 
 export class ListTodos extends Component {
@@ -10,7 +10,7 @@ export class ListTodos extends Component {
             result = todos.map(todo =>
                 <li>
                     <TodoLabel task={todo.task}/>
-                    <TodoButton runOnClick={this.props.runOnClick} btnValue={this.props.btnValue} id={todo._id}/>
+                    <TodoCompleteButton runOnClick={this.props.runOnClick} btnValue={this.props.btnValue} id={todo._id}/>
                 </li>
             );
         }

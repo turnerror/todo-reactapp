@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-export class TodoButton extends Component {
+export class TodoCompleteButton extends Component {
 
     handleChecked = (e) => {
         this.props.runOnClick(this.props.id);
