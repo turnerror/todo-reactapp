@@ -34,10 +34,7 @@ export class TodoApp extends Component {
         }
     };
 
-    createTodo = async (e) => {
-        e.preventDefault();
-
-        const value = e.target.todoName.value;
+    createTodo = async (value) => {
         if (value.length < 1) {
             this.setState({inputError: 'Task must be at least 1 character long'});
             return;
