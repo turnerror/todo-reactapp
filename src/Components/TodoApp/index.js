@@ -34,6 +34,15 @@ export class TodoApp extends Component {
         }
     };
 
+    getTodoById = async (id) => {
+        const response = await fetch(`http://localhost:3001/todo/${id}`);
+        const data = await response.json();
+
+        if (data.success){
+            return data.data;
+        }
+    };
+
     createTodo = async (value) => {
         if (value.length < 1) {
             this.setState({inputError: 'Task must be at least 1 character long'});
@@ -84,6 +93,23 @@ export class TodoApp extends Component {
         }
     };
 
+    editTodo = async (todo, key) => {
+        const result = await fetch(`http://localhost:3001/todo/${todo._id}`, {
+            method: 'PUT',
+            body: JSON.stringify({todo: todo}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await result.json();
+        if (data.success) {
+            let uncompleted = this.state.uncompletedTodos;
+            uncompleted[key].task = todo.task;
+            this.setState({'uncompletedTasks': uncompleted});
+        }
+
+    };
+
     deleteTodo = async (id) => {
         const result = await fetch(`http://localhost:3001/todo/${id}`, {
             method: 'DELETE',
@@ -120,7 +146,7 @@ export class TodoApp extends Component {
                     {this.state.inputError}
                     {this.state.serverError}
                     <h3>Uncompleted Todos</h3>
-                        <ListTodos runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
+                        <ListTodos getTodoById={this.getTodoById} editTodo={this.editTodo} runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
                     <h3>Completed Todos</h3>
                         <ListTodos runOnClick={this.deleteTodo} todos={this.state.completedTodos} btnValue="Delete"/>
                 </section>
