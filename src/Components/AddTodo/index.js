@@ -2,18 +2,25 @@ import React, { Component } from 'react';
 
 export class AddTodo extends Component {
 
+    state = {
+        value: ''
+    };
+
+    handleChange= (e) => {
+        this.setState({value: e.target.value});
+    };
+
+    handleClick= () => {
+        this.props.createTodo(this.state.value);
+    };
+
     render() {
         return (
-            <form onSubmit={this.props.createTodo} className="add-todo">
-                <div className="form-group">
+                <div>
                     <label>Task</label>
-                    <input name="todoName" type="text" className="form-control name"/>
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    <button onClick={this.handleClick}>Create!</button>
                 </div>
-                <div className="form-group">
-                    <input type="submit" className="btn btn-success" value="Create!"/>
-                </div>
-            </form>
-
         )
-    }
+    };
 }

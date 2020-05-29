@@ -3,6 +3,8 @@ import {ListTodos} from "../ListTodos";
 import {AddTodo} from "../AddTodo";
 
 export class TodoApp extends Component {
+    serverErrorMsg = "Something went wrong, Please try again";
+
     constructor(props) {
         super(props);
 
@@ -15,21 +17,26 @@ export class TodoApp extends Component {
     getUncompletedTodos = async () => {
         const response = await fetch('http://localhost:3001/todos');
         const data = await response.json();
-        this.setState({'uncompletedTodos': data.data});
+        if (data.success) {
+            this.setState({'uncompletedTodos': data.data});
+        } else {
+            this.setState({'serverError': this.serverErrorMsg})
+        }
     };
 
     getCompletedTodos = async () => {
         const response = await fetch('http://localhost:3001/todos?completed=1');
         const data = await response.json();
-        this.setState({'completedTodos': data.data});
+        if (data.success) {
+            this.setState({'completedTodos': data.data});
+        } else {
+            this.setState({'serverError': this.serverErrorMsg})
+        }
     };
 
-    createTodo = async (e) => {
-        e.preventDefault();
-
-        const value = e.target.todoName.value;
+    createTodo = async (value) => {
         if (value.length < 1) {
-            this.setState({error: 'Task must be at least 1 character long'});
+            this.setState({inputError: 'Task must be at least 1 character long'});
             return;
         }
         const result = await fetch('http://localhost:3001/todos', {
@@ -45,6 +52,8 @@ export class TodoApp extends Component {
             uncompleted.push(data.data);
             this.setState({'uncompletedTasks': uncompleted});
             this.setState({error: ''});
+        } else {
+            this.setState({'serverError': this.serverErrorMsg})
         }
     };
 
@@ -59,18 +68,19 @@ export class TodoApp extends Component {
         if (data.success){
             let uncompleted = this.state.uncompletedTodos;
             let completed = this.state.completedTodos;
-            let i = 0;
 
-            uncompleted.forEach(todo => {
+            uncompleted.forEach((todo, i) => {
                 if(todo._id === id) {
                     uncompleted.splice(i, 1);
                     completed.push(todo);
                     return;
                 }
-                i++;
             });
+
             this.setState({'completedTasks': completed});
             this.setState({'uncompletedTasks': uncompleted});
+        }  else {
+            this.setState({'serverError': this.serverErrorMsg})
         }
     };
 
@@ -84,15 +94,16 @@ export class TodoApp extends Component {
         const data = await result.json();
         if (data.success){
             let completed = this.state.completedTodos;
-            let i = 0;
-            completed.forEach(todo => {
+
+            completed.forEach((todo, i) => {
                 if(todo._id === id) {
                     completed.splice(i, 1);
                     return;
                 }
-                i++;
             });
             this.setState({'completedTasks': completed});
+        }  else {
+            this.setState({'serverError': this.serverErrorMsg})
         }
     };
 
@@ -106,7 +117,8 @@ export class TodoApp extends Component {
                 <section className="main">
                     <h3>Added a Todo!</h3>
                         <AddTodo createTodo={this.createTodo}/>
-                    {this.state.error}
+                    {this.state.inputError}
+                    {this.state.serverError}
                     <h3>Uncompleted Todos</h3>
                         <ListTodos runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
                     <h3>Completed Todos</h3>
