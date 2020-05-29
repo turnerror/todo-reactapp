@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {ListTodos} from "../ListTodos";
 import {AddTodo} from "../AddTodo";
+import "./style.css";
+
 
 export class TodoApp extends Component {
     serverErrorMsg = "Something went wrong, Please try again";
@@ -34,6 +36,15 @@ export class TodoApp extends Component {
         }
     };
 
+    getTodoById = async (id) => {
+        const response = await fetch(`http://localhost:3001/todo/${id}`);
+        const data = await response.json();
+
+        if (data.success){
+            return data.data;
+        }
+    };
+
     createTodo = async (value) => {
         if (value.length < 1) {
             this.setState({inputError: 'Task must be at least 1 character long'});
@@ -54,6 +65,22 @@ export class TodoApp extends Component {
             this.setState({error: ''});
         } else {
             this.setState({'serverError': this.serverErrorMsg})
+        }
+    };
+
+    editTodo = async (todo, key) => {
+        const result = await fetch(`http://localhost:3001/todo/${todo._id}`, {
+            method: 'PUT',
+            body: JSON.stringify({todo: todo}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await result.json();
+        if (data.success) {
+            let uncompleted = this.state.uncompletedTodos;
+            uncompleted[key].task = todo.task;
+            this.setState({'uncompletedTasks': uncompleted});
         }
     };
 
@@ -108,7 +135,6 @@ export class TodoApp extends Component {
     };
 
     render() {
-
         return (
             <section className="todoapp">
                 <header className="header">
@@ -120,11 +146,40 @@ export class TodoApp extends Component {
                     {this.state.inputError}
                     {this.state.serverError}
                     <h3>Uncompleted Todos</h3>
-                        <ListTodos runOnClick={this.completeTodo} todos={this.state.uncompletedTodos} btnValue="Mark Done"/>
+                        <ListTodos runOnBtnClick1={this.markCompleteOnClick} runOnBtnClick2={this.editOnClick} accordian="true" todos={this.state.uncompletedTodos} btn1Value="Mark Done"  btn2Value="Edit"/>
                     <h3>Completed Todos</h3>
-                        <ListTodos runOnClick={this.deleteTodo} todos={this.state.completedTodos} btnValue="Delete"/>
+                        <ListTodos runOnBtnClick1={this.deleteOnClick} todos={this.state.completedTodos} btn1Value="Delete"/>
                 </section>
             </section>
         )
     }
+
+    markCompleteOnClick= (e) => {
+        this.completeTodo(e.target.parentElement.dataset.id);
+    };
+
+
+    deleteOnClick= (e) => {
+        this.deleteTodo(e.target.parentElement.dataset.id);
+    };
+
+    editOnClick = async (e) => {
+        const accordion = e.target.nextSibling;
+        const id = e.target.parentElement.dataset.id;
+        const key = e.target.parentElement.dataset.key;
+
+        if (e.target.value === 'Edit') {
+            e.target.value = 'Save';
+            accordion.classList.remove('hidden');
+
+        } else {
+            e.target.value = 'Edit';
+            const todo = {_id: id, task: accordion.lastChild.value};
+            await this.editTodo(todo, key);
+            accordion.classList.add('hidden');
+        }
+
+    };
+
+
 }
