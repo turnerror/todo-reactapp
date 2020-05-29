@@ -83,11 +83,13 @@ export class TodoApp extends Component {
         const data = await result.json();
         if (data.success){
             let completed = this.state.completedTodos;
-            completed.forEach((todo, i) => {
+            let i = 0;
+            completed.forEach(todo => {
                 if(todo._id === id) {
                     completed.splice(i, 1);
                     return;
                 }
+                i++;
             });
             this.setState({'completedTasks': completed});
         }
