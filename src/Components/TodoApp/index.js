@@ -59,16 +59,15 @@ export class TodoApp extends Component {
         if (data.success){
             let uncompleted = this.state.uncompletedTodos;
             let completed = this.state.completedTodos;
-            let i = 0;
 
-            uncompleted.forEach(todo => {
+            uncompleted.forEach((todo, i) => {
                 if(todo._id === id) {
                     uncompleted.splice(i, 1);
                     completed.push(todo);
                     return;
                 }
-                i++;
             });
+            
             this.setState({'completedTasks': completed});
             this.setState({'uncompletedTasks': uncompleted});
         }
